@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+</head>
+
+<body>
+
+<div class="container pt-3">
+ <br>
+  <div class="jumbotron">
+   <ul id="form-control"></ul>
+    <form id="form">
+     <div class="form-group">
+      <label for="input">Mensagem</label>
+      <input type="text" class="form-control" id="input" aria-describedby="messageH" placeholder="Digite sua mensagem">
+      <small id="messageH" class="form-text text-muted">envie sua mensagem</small>
+      <button type="submit" class="btn btn-primary">Enviar</button>
+     </div>
+    </form>
+  </div>
+</div> 
+<script>
+    const socket = io();
+
+    const username = window.prompt("Qual seu nome?"); //substituição tela de login
+    socket.emit('new user', username);
+
+    const messageForm = document.getElementById('form');
+    const textInput = document.getElementById('input');
+
+    messageForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (textInput.value) {socket.emit('new message', textInput.value);
+            textInput.value = '';
+        }
+    });
+ 
+    socket.on('send message', (data) => {
+        const messageList = document.getElementById('form-control');
+        const chatItem = document.createElement('li');
+        chatItem.textContent = data.user + ': ' + data.message;
+        messageList.appendChild(chatItem);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+</script>
+
+</body>
+
+</html>
